@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   IonContent,
   IonHeader,
@@ -8,7 +9,30 @@ import {
 import ExploreContainer from "../components/ExploreContainer";
 import "./Tab1.css";
 import { Button } from "antd";
+
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    function handleOnline() {
+      console.log("handleOnline");
+      setIsOnline(true);
+    }
+    function handleOffline() {
+      console.log("handleOffline");
+      setIsOnline(false);
+    }
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+  return isOnline;
+}
 const Tab1: React.FC = () => {
+  const isOnline = useOnlineStatus();
+  console.log("isOnline", isOnline);
   return (
     <IonPage>
       <IonHeader>
@@ -19,6 +43,7 @@ const Tab1: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse='condense'>
           <IonToolbar>
+            <h1>{isOnline ? "✅ Online" : "❌ Disconnected"}</h1>
             <IonTitle size='large'>Tab 1</IonTitle>
           </IonToolbar>
         </IonHeader>
